@@ -1,15 +1,11 @@
-# using decission tree predict prices
 import time
-
 import numpy as np
 import pandas as pd
 from RandomForest import trainTestSplit, buildDecisionTree, decisionTreePredictions, calculateAccuracy
 
 
 def main():
-    minSamplesLeaf = 5
-    maxDepth = 5
-    df = pd.read_csv("../../historicalData.tsv", sep='\t')
+    df = pd.read_csv("/Users/teniukaite/Desktop/AI/I laboras/historicalData.tsv", sep='\t')
     df.drop(['Id'], axis=1, inplace=True)
     continuousFeatures = df.select_dtypes(exclude=['object']).columns.tolist()
 

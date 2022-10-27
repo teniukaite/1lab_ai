@@ -7,8 +7,6 @@ from DecisionTree import trainTestSplit, buildDecisionTree, decisionTreePredicti
 
 
 def main():
-    minSamplesLeaf = 5
-    maxDepth = 5
     df = pd.read_csv("../../historicalData.tsv", sep='\t')
     df.drop(['Id'], axis=1, inplace=True)
     continuousFeatures = df.select_dtypes(exclude=['object']).columns.tolist()
