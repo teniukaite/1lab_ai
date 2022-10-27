@@ -63,7 +63,7 @@ def main():
     print("buildTime = {0:.2f}s".format(buildingTime), end="\n")
 
     data = pd.DataFrame(np.array([[65, 8450, 0, 0, 2003, 2003, 0,0,0]], dtype=object),
-                        columns=['LotArea', 'LotFrontage', 'Street', 'Neighborhood', 'YearBuilt', 'YearRemodAdd', 'CentralAir', 'PavedDrive', 'SaleCondition'])
+                        columns=['LotFrontage','LotArea', 'Street', 'Neighborhood', 'YearBuilt', 'YearRemodAdd', 'CentralAir', 'PavedDrive', 'SaleCondition'])
     predict = decisionTreePredictions(data, decisionTree)
     print('Predicted price: ', predict[0])
 

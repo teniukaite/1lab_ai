@@ -6,14 +6,30 @@ import pandas as pd
 
 def main():
     df = pd.read_csv("../historicalData.tsv", sep='\t')
-    df = df[['LotFrontage', 'LotArea', 'YearBuilt', 'YearRemodAdd', 'SalePrice', 'CentralAir']]  # Columns which will be selected
+    df = df[['LotFrontage','LotArea', 'Street', 'Neighborhood', 'YearBuilt', 'YearRemodAdd', 'CentralAir', 'PavedDrive', 'SaleCondition', 'SalePrice']]  # Columns which will be selected
 
     # Standartization of data for continous variables
     df = fixNAValuesOfColumns(df)
     data = df.copy()
-    # preparedData = convertCategoricToBoolean(data)
+
+    streets = createMapForColumn(data["Street"])
+    data['Street'] = data['Street'].map(streets)
+
+    # get all Neighbourhoods
+    neighbourhoods = createMapForColumn(data['Neighborhood'])
+    data['Neighborhood'] = data['Neighborhood'].map(neighbourhoods)
+
+    centralAir = createMapForColumn(data['CentralAir'])
+    data['CentralAir'] = data['CentralAir'].map(centralAir)
+
+    pavedDrive = createMapForColumn(data['PavedDrive'])
+    data['PavedDrive'] = data['PavedDrive'].map(pavedDrive)
+
+    saleCondition = createMapForColumn(df['SaleCondition'])
+    data['SaleCondition'] = data['SaleCondition'].map(saleCondition)
+
     preparedData = prepareData(data, df)
-    convertToNumeric(preparedData, 'CentralAir')
+
     salePrice_column = preparedData["SalePrice"]
     preparedData = preparedData.drop(columns=["SalePrice"])
     preparedData = pd.concat([preparedData, salePrice_column], axis=1)
@@ -22,11 +38,14 @@ def main():
 
     indices = list(zip(*nearestIndices))[1]
 
-    nearest = df.loc[indices,:]  # Nearest neighbours
+    nearest = preparedData.loc[indices,:]  # Nearest neighbours
+
+    mean = salePriceMean(nearest.to_dict('records'))
+    print(preparedData)
 
     print("Predicted price for ")
     print(query)
-    print("predicted price: {0:7.2f}".format(nearest["SalePrice"].mean()))
+    print("predicted price: {0:7.2f}".format(mean))
 
 def dataPreprocessing(updatedData, initialData, column):
     if column.isnumeric():
@@ -34,8 +53,8 @@ def dataPreprocessing(updatedData, initialData, column):
 
 
 def calculateNeighbours(data, k, df):
-    query = pd.DataFrame(np.array([[57, 7449, 1930, 1950, 1]]),
-                         columns=['LotFrontage', 'LotArea', 'YearBuilt', 'YearRemodAdd', 'CentralAir'])
+    query = pd.DataFrame(np.array([[65, 8450, 0, 0, 2003, 2003, 0,0,0]], dtype=object),
+                        columns=['LotFrontage','LotArea', 'Street', 'Neighborhood', 'YearBuilt', 'YearRemodAdd', 'CentralAir', 'PavedDrive', 'SaleCondition'])
 
     preparedQuery = query.copy()
     # preparedQuery = convertCategoricToBoolean(preparedQuery)
@@ -98,5 +117,14 @@ def hammingDistance(row, query):
 def convertToNumeric(data, column):
     map = {'Y': 1, 'N': 0}
     data[column] = data[column].map(map)
+
+    return data
+
+def createMapForColumn(column):
+    values = column.unique()
+    d = {}
+    for i in range(len(values)):
+        d[values[i]] = i
+    return d
 
 main()

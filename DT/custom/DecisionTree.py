@@ -2,6 +2,8 @@ import numpy
 import pandas
 import random
 
+#resources https://github.com/SebastianMantey/Decision-Tree-from-Scratch
+
 def trainTestSplit(dataFrame, testSize):
     if isinstance(testSize, float):
         testSize = round(testSize * len(dataFrame))
